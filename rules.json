@@ -1,0 +1,116 @@
+[
+    {
+      "name": "No-op commands",
+      "type": "simple",
+      "command": "$0",
+      "map": {
+        "yes": "",
+        "nop": ""
+      }
+    },
+    {
+      "name": "Dangerous key combinations (require voting)",
+      "type": "regex",
+      "command": "VOTE $0",
+      "map": {
+        "(?:meta_l-)?ctrl-(?:shift-)?(?:alt-)?c": "sendkey $0"
+      }
+    },
+    {
+      "name": "Special commands (require voting)",
+      "type": "simple",
+      "command": "VOTE $0",
+      "map": {
+        "system_reset": "system_reset",
+        "boot_cd": "boot_set dc",
+        "boot_drive": "boot_set cd"
+      }
+    },
+    {
+      "name": "Function keys (all modifiers)",
+      "type": "regex",
+      "modifiers": [ "meta_l", "ctrl", "shift", "alt" ],
+      "command": "sendkey $0",
+      "list": [ "f[1-9]|f1[0-2]" ]
+    },
+    {
+      "name": "Uppercase letters (no modifiers)",
+      "type": "regex",
+      "command": "sendkey shift-$0",
+      "list": [ "[A-Z]" ]
+    },
+    {
+      "name": "Numbers (all modifiers except shift)",
+      "type": "regex",
+      "modifiers": [ "meta_l", "ctrl", "alt" ],
+      "command": "sendkey $0",
+      "list": [ "[0-9]" ]
+    },
+    {
+      "name": "Lowercase letters (all modifiers)",
+      "type": "regex",
+      "modifiers": [ "meta_l", "ctrl", "shift", "alt" ],
+      "command": "sendkey $0",
+      "list": [ "[a-z]" ]
+    },
+    {
+      "name": "Special keys (all modifiers)",
+      "type": "simple",
+      "modifiers": [ "meta_l", "ctrl", "shift", "alt" ],
+      "command": "sendkey $0",
+      "map": {
+        "escape": "esc",
+        "backspace": "backspace",
+        "tab": "tab",
+        "enter": "ret",
+        "space": "spc",
+        "up": "up",
+        "down": "down",
+        "left": "left",
+        "right": "right"
+      }
+    },
+    {
+      "name": "Symbols (no shift)",
+      "type": "simple",
+      "modifiers": [ "meta_l", "ctrl", "alt" ],
+      "command": "sendkey $0",
+      "map": {
+        "`": "grave_accent",
+        "~": "shift-grave_accent",
+        "!": "shift-1",
+        "at": "shift-2",
+        "#": "shift-3",
+        "$": "shift-4",
+        "%": "shift-5",
+        "^": "shift-6",
+        "&": "shift-7",
+        "*": "shift-8",
+        "(": "shift-9",
+        ")": "shift-0",
+        "-": "minus",
+        "_": "shift-minus",
+        "=": "equal",
+        "+": "shift-equal",
+
+        "[": "bracket_left",
+        "{": "shift-bracket_left",
+        "]": "bracket_right",
+        "}": "shift-bracket_right",
+        "backslash": "backslash",
+        "|": "shift-backslash",
+
+        ";": "semicolon",
+        ":": "shift-semicolon",
+        "'": "apostrophe",
+        "\"": "shift-apostrophe",
+
+        ",": "comma",
+        "<": "shift-comma",
+        "dot": "dot",
+        ">": "shift-dot",
+        "slash": "slash",
+        "?": "shift-slash"
+      }
+    }
+  ]

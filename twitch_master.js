@@ -5,13 +5,13 @@
 
 /* exports */
 var exports = module.exports = {};
-exports.map = {}; // json command mapping
 
 /* requires */
 var fs  = require('fs'),
 	irc = require('irc'),
 	crypto = require('crypto'),
 	pub = require('./lib/comm').sender(),
+	rules = require('./lib/rules'),
 	config = require('./config.json');
 
 /* settings */
@@ -59,23 +59,6 @@ function reportStatus(message, twitch)
 
 	console.log(message);
 }
-
-
-/* loads the command mapping - exported for testing */
-exports.map_load = function()
-{
-	fs.exists('map.json', function() {
-		try {
-			var map_new = require('./map.json');
-			exports.map = map_new;
-			console.log('(Re)loaded map.json');
-		} catch (ex) {
-			console.log('Could not load map.json');
-			console.log(ex);
-		}
-	});
-}
-
 
 /*
  * see http://stackoverflow.com/a/13794386
@@ -262,7 +245,7 @@ function processCommand()
 				reportStatus('Vote succeeded: ' + voting_command, true);
 
 				// send
-				var command_qemu = exports.map[voting_command].replace(/^VOTE /, '');
+				var command_qemu = rules.resolve(voting_command).replace(/^VOTE /, '');
 				console.log('Sending to qemu: ' + command_qemu);
 				pub.send(['qemu-manager', command_qemu]);
 			} else {
@@ -271,16 +254,19 @@ function processCommand()
       
 			voting_command = null;
 
-		} else if (exports.map[selected_command].indexOf("VOTE") == 0) {
-			// this command requires a vote
-			reportStatus('Voting on command (yes to run, nop not to run): ' + selected_command, true);
+		} else {
+			var command = rules.resolve(selected_command) || "";
+			if (command.indexOf("VOTE") == 0) {
+				// this command requires a vote
+				reportStatus('Voting on command (yes to run, nop not to run): ' + selected_command, true);
 
-			voting_command = selected_command;
-      
-		} else if (exports.map[selected_command] != "") {
-			// normal command
-			console.log('Sending to qemu: ' + exports.map[selected_command]);
-			pub.send(['qemu-manager', exports.map[selected_command]]);
+				voting_command = selected_command;
+		  
+			} else if (command != "") {
+				// normal command
+				console.log('Sending to qemu: ' + command);
+				pub.send(['qemu-manager', command]);
+			}
 		}
 	} else if (last_exec_cmd != 'yes' && last_exec_cmd != 'nop') {
 		reportStatus('Not enough votes.', true);
@@ -303,7 +289,8 @@ function main()
 
 		switch(args[0].trim()) {
 		case 'map_load':
-			exports.map_load();
+		case 'rules_load':
+			rules.reload();
 			break;
 		case 'reset_voting':
 			// for when this inevitably breaks
@@ -343,17 +330,15 @@ function main()
 		}
 	});
 
-	exports.map_load();
-
 	twitch_chat.connect(0, function() {
 		console.log("Twitch connected!");
 	});
 
 	twitch_chat.addListener('message#' + config['nick'], function(from, msg) {
-		if (exports.map[msg] != null) {
-			console.log(from + ': ' + msg + ' -> ' + exports.map[msg]);
+		var command = rules.resolve(msg);
+		if (command != null) {
+			console.log(from + ': ' + msg + ' -> ' + command);
 			pub.send(['client-console', '> ' + from + ': ' + msg]);
-
 			last_tally[from.trim()] = msg;
 		}
 	});
