@@ -2,18 +2,19 @@
     {
       "name": "No-op commands",
       "type": "simple",
-      "command": "$0",
-      "map": {
-        "yes": "",
-        "nop": ""
-      }
+      "command": "",
+      "list": [ "yes", "nop" ]
     },
     {
       "name": "Dangerous key combinations (require voting)",
       "type": "regex",
-      "command": "VOTE $0",
+      "command": "VOTE sendkey $0",
+      "list": [
+        "(?:meta_l-)?ctrl-(?:shift-)?(?:alt-)?c",
+        "(?:meta_l-)?ctrl-alt-backspace"
+      ],
       "map": {
-        "(?:meta_l-)?ctrl-(?:shift-)?(?:alt-)?c": "sendkey $0"
+        "ctrl-alt-del": "ctrl-alt-delete"
       }
     },
     {
@@ -58,16 +59,13 @@
       "type": "simple",
       "modifiers": [ "meta_l", "ctrl", "shift", "alt" ],
       "command": "sendkey $0",
+      "list": [ "backspace", "tab", "up", "down", "left", "right",
+                "print", "home", "pgup", "pgdn", "end", "insert", "pause" ],
       "map": {
         "escape": "esc",
-        "backspace": "backspace",
-        "tab": "tab",
         "enter": "ret",
         "space": "spc",
-        "up": "up",
-        "down": "down",
-        "left": "left",
-        "right": "right"
+        "del": "delete"
       }
     },
     {
